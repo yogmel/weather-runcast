@@ -10,6 +10,7 @@ export interface WeatherForecast {
   timezone_offset: number;
   current: CurrentWeather;
   daily: DailyWeather[];
+  hourly: HourlyWeather[];
   alerts?: WeatherAlert[];
 }
 
@@ -65,6 +66,26 @@ export interface DailyWeather {
   rain?: number;
 }
 
+export interface HourlyWeather {
+  dt: number;
+  temp: number;
+  feels_like: number;
+  pressure: number;
+  humidity: number;
+  dew_point: number;
+  uvi: number;
+  clouds: number;
+  visibility: number;
+  wind_speed: number;
+  wind_deg: number;
+  wind_gust: number;
+  weather: WeatherCondition[];
+  pop: number;
+  rain?: {
+    "1h": number;
+  };
+}
+
 export interface WeatherCondition {
   id: number;
   main: string;
@@ -80,3 +101,7 @@ export interface WeatherAlert {
   description: string;
   tags: string[];
 }
+
+export type RunRecommendation =
+  | { type: "Outdoor run" }
+  | { type: "Indoor run"; reason: string };

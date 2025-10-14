@@ -2,10 +2,7 @@ import { useState, useEffect } from "react";
 import { getLatLngFromLocation, getWeatherForecast } from "./api/openWeather";
 import type { LatLng, WeatherForecast } from "./types";
 import "./App.css";
-import {
-  getRunRecommendation,
-  getBestOutdoorRunDay,
-} from "./utils/weatherUtils";
+import { getBestOutdoorRunDay } from "./utils/weatherUtils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import WeatherCard from "./components/WeatherCard";
@@ -133,13 +130,18 @@ function App() {
                 maxTemp={parseInt(maxTemp)}
                 isBestDay={
                   index === 0 &&
-                  !!getBestOutdoorRunDay(
+                  getBestOutdoorRunDay(
                     forecast.daily,
                     parseInt(minTemp),
                     parseInt(maxTemp),
                     forecast.alerts
-                  )
+                  )?.type === "Outdoor run"
                 }
+                hourlyForecast={forecast.hourly.filter((hour) => {
+                  const dayStart = day.dt;
+                  const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds
+                  return hour.dt >= dayStart && hour.dt < dayEnd;
+                })}
               />
             ))}
           </motion.div>

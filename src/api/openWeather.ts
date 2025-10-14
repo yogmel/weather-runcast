@@ -46,7 +46,7 @@ export const getWeatherForecast = async (
 
   try {
     const response = await fetch(
-      `${ONE_CALL_BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely,hourly&appid=${API_KEY}&units=metric`
+      `${ONE_CALL_BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely&appid=${API_KEY}&units=metric`
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

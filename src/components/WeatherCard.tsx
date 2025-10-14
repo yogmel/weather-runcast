@@ -1,6 +1,14 @@
 import React from "react";
-import type { DailyWeather, WeatherAlert } from "../types";
-import { getRunRecommendation } from "../utils/weatherUtils";
+import type {
+  DailyWeather,
+  WeatherAlert,
+  HourlyWeather,
+  RunRecommendation,
+} from "../types";
+import {
+  getRunRecommendation,
+  getBestHourlyRunTimes,
+} from "../utils/weatherUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sun, Cloud, CloudRain, Wind } from "lucide-react";
 import { motion } from "framer-motion";
@@ -11,6 +19,7 @@ interface WeatherCardProps {
   isBestDay: boolean;
   minTemp: number;
   maxTemp: number;
+  hourlyForecast: HourlyWeather[];
 }
 
 const WeatherCard: React.FC<WeatherCardProps> = ({
@@ -19,8 +28,19 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   isBestDay,
   minTemp,
   maxTemp,
+  hourlyForecast,
 }) => {
-  const recommendation = getRunRecommendation(day, minTemp, maxTemp, alerts);
+  const recommendation: RunRecommendation = getRunRecommendation(
+    day,
+    minTemp,
+    maxTemp,
+    alerts
+  );
+  const { suitable, bestHours } = getBestHourlyRunTimes(
+    hourlyForecast,
+    minTemp,
+    maxTemp
+  );
   const date = new Date(day.dt * 1000).toLocaleDateString();
   const sunsetTime = new Date(day.sunset * 1000).toLocaleTimeString([], {
     hour: "2-digit",
@@ -74,15 +94,29 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
             </p>
             <span
               className={`inline-block rounded-full px-3 py-1 text-sm font-semibold text-white mt-2 ${
-                recommendation === "Outdoor run" ? "bg-green-500" : "bg-red-500"
+                recommendation.type === "Outdoor run"
+                  ? "bg-green-500"
+                  : "bg-red-500"
               }`}
             >
-              {recommendation}
+              {recommendation.type === "Outdoor run"
+                ? "Outdoor run"
+                : `Indoor run: ${recommendation.reason}`}
             </span>
             {isBestDay && (
               <p className="text-green-300 font-bold text-sm mt-2">
                 Best day for outdoor run!
               </p>
+            )}
+            {suitable && (
+              <div className="mt-2">
+                <p className="text-green-300 font-bold text-sm">
+                  Suitable for hourly run!
+                </p>
+                <p className="text-green-300 text-xs">
+                  Best hours: {bestHours.join(", ")}
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>

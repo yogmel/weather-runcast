@@ -51,6 +51,24 @@ This is a single-page web application that helps runners decide whether to run o
     ```
     The app will be accessible at `http://localhost:5173` (or another port if 5173 is in use).
 
+### Docker Development
+
+You can run the application using Docker for a consistent development environment.
+
+**Prerequisites:**
+
+- Docker and Docker Compose installed.
+
+**Steps:**
+
+1. Build and start the container:
+   ```bash
+   docker-compose up --build
+   ```
+2. Access the application at `http://localhost:5173`.
+
+The container is configured with volume mounting, so changes to your local source code will be reflected in the running container via Hot Module Replacement (HMR).
+
 ## API Usage Notes
 
 This application uses the OpenWeatherMap Geocoding API to convert location names to latitude and longitude, and the OpenWeatherMap One Call API 3.0 to fetch weather forecast data.

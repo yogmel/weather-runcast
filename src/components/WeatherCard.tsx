@@ -11,13 +11,16 @@ import {
 } from "../utils/weatherUtils";
 import {
   Card,
+  Alert,
   CardHeader,
   CardBody,
   Heading,
   Text,
-  Badge,
   Flex,
   Box,
+  AlertTitle,
+  AlertIcon,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { Sun, Cloud, CloudRain, Wind } from "lucide-react";
 
@@ -82,6 +85,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
       borderColor={isBestDay ? "green.400" : "transparent"}
       display="flex"
       flexDirection="column"
+      className="max-w-xs w-full"
     >
       <CardHeader p={0} mb={2}>
         <Heading size="md">{date}</Heading>
@@ -103,18 +107,19 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
           Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
           <Box as={Wind} ml={1} w={4} h={4} />
         </Flex>
-        <Badge
-          borderRadius="full"
-          px={3}
-          py={1}
-          colorScheme={recommendation.type === "Outdoor run" ? "green" : "red"}
-          mt={2}
-          variant="solid"
+        <Alert
+          status={recommendation.type === "Outdoor run" ? "success" : "error"}
         >
-          {recommendation.type === "Outdoor run"
-            ? "Outdoor run"
-            : `Indoor run: ${recommendation.reason}`}
-        </Badge>
+          <AlertIcon />
+          <AlertTitle>{recommendation.type}</AlertTitle>
+          <AlertDescription>
+            {" "}
+            {recommendation.type === "Outdoor run"
+              ? "Outdoor run"
+              : `Indoor run: ${recommendation.reason}`}
+          </AlertDescription>
+        </Alert>
+
         {isBestDay && (
           <Text color="green.300" fontWeight="bold" fontSize="sm" mt={2}>
             Best day for outdoor run!

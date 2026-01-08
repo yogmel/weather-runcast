@@ -13,7 +13,6 @@ import {
   Box,
 } from "@chakra-ui/react";
 import WeatherCard from "./components/WeatherCard";
-import { AnimatePresence } from "framer-motion";
 
 function App() {
   const [location, setLocation] = useState<string>(
@@ -141,43 +140,41 @@ function App() {
       )}
 
       {forecast && (
-        <AnimatePresence>
-          <Box
-            display="flex"
-            overflowX="auto"
-            maxW="100vw"
-            p={4}
-            sx={{
-              gap: "10px",
-              zIndex: 1,
-              position: "relative",
-            }}
-          >
-            {forecast.daily.slice(0, 7).map((day, index) => (
-              <WeatherCard
-                key={day.dt} // Use a unique identifier for key
-                day={day}
-                alerts={forecast.alerts}
-                minTemp={parseInt(minTemp)}
-                maxTemp={parseInt(maxTemp)}
-                isBestDay={
-                  index === 0 &&
-                  getBestOutdoorRunDay(
-                    forecast.daily,
-                    parseInt(minTemp),
-                    parseInt(maxTemp),
-                    forecast.alerts
-                  )?.type === "Outdoor run"
-                }
-                hourlyForecast={forecast.hourly.filter((hour) => {
-                  const dayStart = day.dt;
-                  const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds
-                  return hour.dt >= dayStart && hour.dt < dayEnd;
-                })}
-              />
-            ))}
-          </Box>
-        </AnimatePresence>
+        <Box
+          display="flex"
+          overflowX="auto"
+          maxW="100vw"
+          p={4}
+          sx={{
+            gap: "10px",
+            zIndex: 1,
+            position: "relative",
+          }}
+        >
+          {forecast.daily.slice(0, 7).map((day, index) => (
+            <WeatherCard
+              key={day.dt} // Use a unique identifier for key
+              day={day}
+              alerts={forecast.alerts}
+              minTemp={parseInt(minTemp)}
+              maxTemp={parseInt(maxTemp)}
+              isBestDay={
+                index === 0 &&
+                getBestOutdoorRunDay(
+                  forecast.daily,
+                  parseInt(minTemp),
+                  parseInt(maxTemp),
+                  forecast.alerts
+                )?.type === "Outdoor run"
+              }
+              hourlyForecast={forecast.hourly.filter((hour) => {
+                const dayStart = day.dt;
+                const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds
+                return hour.dt >= dayStart && hour.dt < dayEnd;
+              })}
+            />
+          ))}
+        </Box>
       )}
     </Box>
   );

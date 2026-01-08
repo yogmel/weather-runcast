@@ -9,9 +9,17 @@ import {
   getRunRecommendation,
   getBestHourlyRunTimes,
 } from "../utils/weatherUtils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Heading,
+  Text,
+  Badge,
+  Flex,
+  Box,
+} from "@chakra-ui/react";
 import { Sun, Cloud, CloudRain, Wind } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface WeatherCardProps {
   day: DailyWeather;
@@ -60,68 +68,70 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <Card
+      variant="elevated"
+      bg="whiteAlpha.200"
+      backdropFilter="blur(10px)"
+      borderRadius="lg"
+      p={4}
+      boxShadow="lg"
+      color="white"
+      transition="all 0.3s"
+      _hover={{ transform: "scale(1.05)" }}
+      border={isBestDay ? "2px solid" : "none"}
+      borderColor={isBestDay ? "green.400" : "transparent"}
+      display="flex"
+      flexDirection="column"
     >
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card
-          className={`bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-lg p-4 shadow-lg text-white transform transition-all duration-300 hover:scale-105
-            ${isBestDay ? "border-2 border-green-400" : ""}`}
+      <CardHeader p={0} mb={2}>
+        <Heading size="md">{date}</Heading>
+      </CardHeader>
+      <CardBody p={0}>
+        <Flex align="center" justify="space-between" mb={2}>
+          {getWeatherIcon(day.weather[0].icon)}
+          <Text fontSize="lg">
+            {day.temp.min}°C / {day.temp.max}°C
+          </Text>
+        </Flex>
+        <Text fontSize="sm" mb={1}>
+          Condition: {day.weather[0].description}
+        </Text>
+        <Text fontSize="sm" mb={1}>
+          Sunset: {sunsetTime}
+        </Text>
+        <Flex fontSize="sm" mb={2} align="center">
+          Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
+          <Box as={Wind} ml={1} w={4} h={4} />
+        </Flex>
+        <Badge
+          borderRadius="full"
+          px={3}
+          py={1}
+          colorScheme={recommendation.type === "Outdoor run" ? "green" : "red"}
+          mt={2}
+          variant="solid"
         >
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">{date}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between mb-2">
-              {getWeatherIcon(day.weather[0].icon)}
-              <p className="text-lg">
-                {day.temp.min}°C / {day.temp.max}°C
-              </p>
-            </div>
-            <p className="text-sm mb-1">
-              Condition: {day.weather[0].description}
-            </p>
-            <p className="text-sm mb-1">Sunset: {sunsetTime}</p>
-            <p className="text-sm mb-2 flex items-center">
-              Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
-              <Wind className="ml-1 w-4 h-4" />
-            </p>
-            <span
-              className={`inline-block rounded-full px-3 py-1 text-sm font-semibold text-white mt-2 ${
-                recommendation.type === "Outdoor run"
-                  ? "bg-green-500"
-                  : "bg-red-500"
-              }`}
-            >
-              {recommendation.type === "Outdoor run"
-                ? "Outdoor run"
-                : `Indoor run: ${recommendation.reason}`}
-            </span>
-            {isBestDay && (
-              <p className="text-green-300 font-bold text-sm mt-2">
-                Best day for outdoor run!
-              </p>
-            )}
-            {suitable && (
-              <div className="mt-2">
-                <p className="text-green-300 font-bold text-sm">
-                  Suitable for hourly run!
-                </p>
-                <p className="text-green-300 text-xs">
-                  Best hours: {bestHours.join(", ")}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
-    </motion.div>
+          {recommendation.type === "Outdoor run"
+            ? "Outdoor run"
+            : `Indoor run: ${recommendation.reason}`}
+        </Badge>
+        {isBestDay && (
+          <Text color="green.300" fontWeight="bold" fontSize="sm" mt={2}>
+            Best day for outdoor run!
+          </Text>
+        )}
+        {suitable && (
+          <Box mt={2}>
+            <Text color="green.300" fontWeight="bold" fontSize="sm">
+              Suitable for hourly run!
+            </Text>
+            <Text color="green.300" fontSize="xs">
+              Best hours: {bestHours.join(", ")}
+            </Text>
+          </Box>
+        )}
+      </CardBody>
+    </Card>
   );
 };
 

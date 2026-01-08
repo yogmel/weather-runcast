@@ -3,10 +3,17 @@ import { getLatLngFromLocation, getWeatherForecast } from "./api/openWeather";
 import type { LatLng, WeatherForecast } from "./types";
 import "./App.css";
 import { getBestOutdoorRunDay } from "./utils/weatherUtils";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import {
+  Input,
+  Button,
+  Heading,
+  VStack,
+  HStack,
+  Text,
+  Box,
+} from "@chakra-ui/react";
 import WeatherCard from "./components/WeatherCard";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 function App() {
   const [location, setLocation] = useState<string>(
@@ -73,53 +80,78 @@ function App() {
   }, [latLng]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex flex-col items-center justify-center p-4">
-      <h1 className="text-4xl font-bold text-white mb-8">RunCast</h1>
-      <div className="flex flex-col space-y-4 mb-8">
-        <div className="flex space-x-2">
+    <Box
+      minH="100vh"
+      bgGradient="linear(to-br, blue.400, purple.600)"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      p={4}
+    >
+      <Heading as="h1" size="2xl" color="white" mb={8}>
+        RunCast
+      </Heading>
+      <VStack spacing={4} mb={8} w="full" maxW="md">
+        <HStack w="full" spacing={2}>
           <Input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Enter location (e.g., San Francisco)"
-            className="p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            bg="white"
+            color="gray.800"
+            _placeholder={{ color: "gray.400" }}
           />
           <Button
             onClick={handleSearch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={loading}
+            colorScheme="blue"
+            isLoading={loading}
+            loadingText="Searching..."
           >
-            {loading ? "Searching..." : "Search"}
+            Search
           </Button>
-        </div>
-        <div className="flex space-x-2">
+        </HStack>
+        <HStack w="full" spacing={2}>
           <Input
             type="number"
             value={minTemp}
             onChange={(e) => setMinTemp(e.target.value)}
             placeholder="Min Temp (°C)"
-            className="p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            bg="white"
+            color="gray.800"
+            _placeholder={{ color: "gray.400" }}
           />
           <Input
             type="number"
             value={maxTemp}
             onChange={(e) => setMaxTemp(e.target.value)}
             placeholder="Max Temp (°C)"
-            className="p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            bg="white"
+            color="gray.800"
+            _placeholder={{ color: "gray.400" }}
           />
-        </div>
-      </div>
+        </HStack>
+      </VStack>
 
-      {error && <p className="text-red-300 mb-4">{error}</p>}
+      {error && (
+        <Text color="red.300" mb={4}>
+          {error}
+        </Text>
+      )}
 
       {forecast && (
         <AnimatePresence>
-          <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          <Box
+            display="flex"
+            overflowX="auto"
+            maxW="100vw"
+            p={4}
+            sx={{
+              gap: "10px",
+              zIndex: 1,
+              position: "relative",
+            }}
           >
             {forecast.daily.slice(0, 7).map((day, index) => (
               <WeatherCard
@@ -144,10 +176,10 @@ function App() {
                 })}
               />
             ))}
-          </motion.div>
+          </Box>
         </AnimatePresence>
       )}
-    </div>
+    </Box>
   );
 }
 

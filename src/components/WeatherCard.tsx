@@ -98,7 +98,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
           </Text>
         </Flex>
         <Text fontSize="sm" mb={1}>
-          Condition: {day.weather[0].description}
+          Conditions: {day.weather[0].description}
         </Text>
         <Text fontSize="sm" mb={1}>
           Sunset: {sunsetTime}

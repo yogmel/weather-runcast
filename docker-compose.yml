@@ -8,6 +8,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/.vite
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - VITE_WATCH_USE_POLLING=true

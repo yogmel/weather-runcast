@@ -11,6 +11,10 @@ export default defineConfig({
     port: 5173,
     watch: {
       usePolling: true,
+      interval: 100,
+    },
+    hmr: {
+      overlay: true,
     },
   },
   resolve: {

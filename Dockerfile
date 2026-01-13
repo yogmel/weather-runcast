@@ -1,18 +1,18 @@
-FROM node:22-alpine
+FROM oven/bun:latest
 
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package*.json ./
+# Copy package files
+COPY package.json bun.lock ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN bun install
 
-# Copy the rest of the application
+# Copy project files
 COPY . .
 
 # Expose Vite's default dev port
 EXPOSE 5173
 
 # Start the dev server
-CMD ["npm", "run", "dev"]
+CMD ["bun", "run", "dev", "--host"]

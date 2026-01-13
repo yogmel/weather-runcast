@@ -20,6 +20,7 @@ This is a single-page web application that helps runners decide whether to run o
 - **Animations**: Framer Motion
 - **API**: OpenWeatherMap One Call API 3.0 + Geocoding API
 - **Environment Variables**: `import.meta.env` for API key management
+- **Package manager**: Bun v1.3.5
 
 ## Setup Instructions
 
@@ -33,7 +34,7 @@ This is a single-page web application that helps runners decide whether to run o
 2.  **Install dependencies:**
 
     ```bash
-    npm install
+    bun install
     ```
 
 3.  **Set up Environment Variables:**
@@ -47,7 +48,7 @@ This is a single-page web application that helps runners decide whether to run o
 
 4.  **Run the development server:**
     ```bash
-    npm run dev
+    bun dev
     ```
     The app will be accessible at `http://localhost:5173` (or another port if 5173 is in use).
 

@@ -9,19 +9,7 @@ import {
   getRunRecommendation,
   getBestHourlyRunTimes,
 } from "../utils/weatherUtils";
-import {
-  Card,
-  Alert,
-  CardHeader,
-  CardBody,
-  Heading,
-  Text,
-  Flex,
-  Box,
-  AlertTitle,
-  AlertIcon,
-  AlertDescription,
-} from "@chakra-ui/react";
+import { Card, Alert, Heading, Text, Flex, Box } from "@chakra-ui/react";
 import { Sun, Cloud, CloudRain, Wind } from "lucide-react";
 
 interface WeatherCardProps {
@@ -45,12 +33,12 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     day,
     minTemp,
     maxTemp,
-    alerts
+    alerts,
   );
   const { suitable, bestHours } = getBestHourlyRunTimes(
     hourlyForecast,
     minTemp,
-    maxTemp
+    maxTemp,
   );
   const date = new Date(day.dt * 1000).toLocaleDateString();
   const sunsetTime = new Date(day.sunset * 1000).toLocaleTimeString([], {
@@ -71,7 +59,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   };
 
   return (
-    <Card
+    <Card.Root
       variant="elevated"
       bg="whiteAlpha.200"
       backdropFilter="blur(10px)"
@@ -87,10 +75,10 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
       flexDirection="column"
       className="max-w-xs w-full"
     >
-      <CardHeader p={0} mb={2}>
+      <Card.Header p={0} mb={2}>
         <Heading size="md">{date}</Heading>
-      </CardHeader>
-      <CardBody p={0}>
+      </Card.Header>
+      <Card.Body p={0}>
         <Flex align="center" justify="space-between" mb={2}>
           {getWeatherIcon(day.weather[0].icon)}
           <Text fontSize="lg">
@@ -107,18 +95,18 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
           Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
           <Box as={Wind} ml={1} w={4} h={4} />
         </Flex>
-        <Alert
+        <Alert.Root
           status={recommendation.type === "Outdoor run" ? "success" : "error"}
         >
-          <AlertIcon />
-          <AlertTitle>{recommendation.type}</AlertTitle>
-          <AlertDescription>
+          <Alert.Indicator />
+          <Alert.Title>{recommendation.type}</Alert.Title>
+          <Alert.Description>
             {" "}
             {recommendation.type === "Outdoor run"
               ? "Outdoor run"
               : `Indoor run: ${recommendation.reason}`}
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
 
         {isBestDay && (
           <Text color="green.300" fontWeight="bold" fontSize="sm" mt={2}>
@@ -135,8 +123,8 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
             </Text>
           </Box>
         )}
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };
 

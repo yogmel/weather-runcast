@@ -3,20 +3,12 @@ import { getLatLngFromLocation, getWeatherForecast } from "./api/openWeather";
 import type { LatLng, WeatherForecast } from "./types";
 import "./App.css";
 import { getBestOutdoorRunDay } from "./utils/weatherUtils";
-import {
-  Input,
-  Button,
-  Heading,
-  VStack,
-  HStack,
-  Text,
-  Box,
-} from "@chakra-ui/react";
+import { Input, Button, Heading, Text, Box, Stack } from "@chakra-ui/react";
 import WeatherCard from "./components/WeatherCard";
 
 function App() {
   const [location, setLocation] = useState<string>(
-    localStorage.getItem("lastLocation") || ""
+    localStorage.getItem("lastLocation") || "",
   );
   const [minTemp, setMinTemp] = useState<string>("10"); // Default min temperature
   const [maxTemp, setMaxTemp] = useState<string>("25"); // Default max temperature
@@ -81,7 +73,7 @@ function App() {
   return (
     <Box
       minH="100vh"
-      bgGradient="linear(to-br, blue.400, purple.600)"
+      bgGradient="linear(colorPalette.400, colorPalette.600)"
       display="flex"
       flexDirection="column"
       alignItems="center"
@@ -91,8 +83,8 @@ function App() {
       <Heading as="h1" size="2xl" color="white" mb={8}>
         RunCast
       </Heading>
-      <VStack spacing={4} mb={8} w="full" maxW="md">
-        <HStack w="full" spacing={2}>
+      <Stack direction="column" mb={8} w="full" maxW="md">
+        <Stack w="full" direction="row">
           <Input
             type="text"
             value={location}
@@ -105,13 +97,13 @@ function App() {
           <Button
             onClick={handleSearch}
             colorScheme="blue"
-            isLoading={loading}
+            loading={loading}
             loadingText="Searching..."
           >
             Search
           </Button>
-        </HStack>
-        <HStack w="full" spacing={2}>
+        </Stack>
+        <Stack direction="column" w="full">
           <Input
             type="number"
             value={minTemp}
@@ -130,8 +122,8 @@ function App() {
             color="gray.800"
             _placeholder={{ color: "gray.400" }}
           />
-        </HStack>
-      </VStack>
+        </Stack>
+      </Stack>
 
       {error && (
         <Text color="red.300" mb={4}>
@@ -140,17 +132,7 @@ function App() {
       )}
 
       {forecast && (
-        <Box
-          display="flex"
-          overflowX="auto"
-          maxW="100vw"
-          p={4}
-          sx={{
-            gap: "10px",
-            zIndex: 1,
-            position: "relative",
-          }}
-        >
+        <Box display="flex" overflowX="auto" maxW="100vw" p={4}>
           {forecast.daily.slice(0, 7).map((day, index) => (
             <WeatherCard
               key={day.dt} // Use a unique identifier for key
@@ -164,7 +146,7 @@ function App() {
                   forecast.daily,
                   parseInt(minTemp),
                   parseInt(maxTemp),
-                  forecast.alerts
+                  forecast.alerts,
                 )?.type === "Outdoor run"
               }
               hourlyForecast={forecast.hourly.filter((hour) => {

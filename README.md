@@ -9,15 +9,13 @@ This is a single-page web application that helps runners decide whether to run o
 - Recommends "Outdoor run" or "Indoor run" per day based on weather conditions.
 - Identifies the best day and hour for outdoor running based on ideal temperature range (10 °C–25 °C), no rain/low wind/no alerts, and preferably before sunset.
 - Displays a card-style layout for each day’s forecast, including date, weather icon and condition, min/max temperature, sunset time, and recommendation badge.
-- Modern, minimal, responsive, and intuitive UI using React, Vite, TailwindCSS, and shadcn/ui.
+- Modern, minimal, responsive, and intuitive UI using React, Vite, Chakra UI.
 - Smooth card transitions and interactions with Framer Motion.
 - Caches the most recent search in localStorage (optional).
 
 ## Tech Stack
 
-- **Frontend**: React + Vite + TypeScript
-- **Styling**: TailwindCSS + shadcn/ui
-- **Animations**: Framer Motion
+- **Frontend**: React + Vite + TypeScript- **Animations**: Framer Motion
 - **API**: OpenWeatherMap One Call API 3.0 + Geocoding API
 - **Environment Variables**: `import.meta.env` for API key management
 - **Package manager**: Bun v1.3.5
@@ -98,11 +96,9 @@ runcast-app/
 │   │   └── weatherUtils.ts       // Logic for weather analysis and recommendations
 │   ├── App.css
 │   ├── App.tsx                   // Main application component
-│   ├── index.css                 // TailwindCSS imports
 │   └── main.tsx                  // Entry point
 ├── .env                          // Environment variables
 ├── package.json
-├── tailwind.config.js
 ├── postcss.config.js
 ├── tsconfig.json
 ├── tsconfig.app.json

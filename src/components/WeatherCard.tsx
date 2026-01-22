@@ -9,25 +9,12 @@ import {
   getRunRecommendation,
   getBestHourlyRunTimes,
 } from "../utils/weatherUtils";
-import {
-  Card,
-  Alert,
-  CardHeader,
-  CardBody,
-  Heading,
-  Text,
-  Flex,
-  Box,
-  AlertTitle,
-  AlertIcon,
-  AlertDescription,
-} from "@chakra-ui/react";
+import { Card, Alert, Heading, Text, Flex, Box } from "@chakra-ui/react";
 import { Sun, Cloud, CloudRain, Wind } from "lucide-react";
 
 interface WeatherCardProps {
   day: DailyWeather;
   alerts?: WeatherAlert[];
-  isBestDay: boolean;
   minTemp: number;
   maxTemp: number;
   hourlyForecast: HourlyWeather[];
@@ -36,7 +23,6 @@ interface WeatherCardProps {
 const WeatherCard: React.FC<WeatherCardProps> = ({
   day,
   alerts,
-  isBestDay,
   minTemp,
   maxTemp,
   hourlyForecast,
@@ -45,12 +31,12 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     day,
     minTemp,
     maxTemp,
-    alerts
+    alerts,
   );
   const { suitable, bestHours } = getBestHourlyRunTimes(
     hourlyForecast,
     minTemp,
-    maxTemp
+    maxTemp,
   );
   const date = new Date(day.dt * 1000).toLocaleDateString();
   const sunsetTime = new Date(day.sunset * 1000).toLocaleTimeString([], {
@@ -71,7 +57,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   };
 
   return (
-    <Card
+    <Card.Root
       variant="elevated"
       bg="whiteAlpha.200"
       backdropFilter="blur(10px)"
@@ -81,62 +67,61 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
       color="white"
       transition="all 0.3s"
       _hover={{ transform: "scale(1.05)" }}
-      border={isBestDay ? "2px solid" : "none"}
-      borderColor={isBestDay ? "green.400" : "transparent"}
+      borderColor={"transparent"}
       display="flex"
       flexDirection="column"
-      className="max-w-xs w-full"
+      w={"250px"}
     >
-      <CardHeader p={0} mb={2}>
-        <Heading size="md">{date}</Heading>
-      </CardHeader>
-      <CardBody p={0}>
-        <Flex align="center" justify="space-between" mb={2}>
+      <Card.Header p={0} mb={4}>
+        <Heading size="lg" textAlign={"center"}>
+          {date}
+        </Heading>
+      </Card.Header>
+      <Card.Body p={0}>
+        <Flex align="center" justify="center" mb={2} gap="5">
           {getWeatherIcon(day.weather[0].icon)}
           <Text fontSize="lg">
             {day.temp.min}°C / {day.temp.max}°C
           </Text>
         </Flex>
-        <Text fontSize="sm" mb={1}>
-          Conditions: {day.weather[0].description}
-        </Text>
-        <Text fontSize="sm" mb={1}>
-          Sunset: {sunsetTime}
-        </Text>
-        <Flex fontSize="sm" mb={2} align="center">
-          Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
-          <Box as={Wind} ml={1} w={4} h={4} />
-        </Flex>
-        <Alert
+
+        <Box marginY={2}>
+          <Text fontSize="sm" mb={1}>
+            Conditions: {day.weather[0].description}
+          </Text>
+          <Text fontSize="sm" mb={1}>
+            Sunset: {sunsetTime}
+          </Text>
+          <Flex fontSize="sm" mb={2} align="center">
+            Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
+            <Box as={Wind} ml={1} w={4} h={4} />
+          </Flex>
+        </Box>
+
+        <Alert.Root
           status={recommendation.type === "Outdoor run" ? "success" : "error"}
         >
-          <AlertIcon />
-          <AlertTitle>{recommendation.type}</AlertTitle>
-          <AlertDescription>
-            {" "}
-            {recommendation.type === "Outdoor run"
-              ? "Outdoor run"
-              : `Indoor run: ${recommendation.reason}`}
-          </AlertDescription>
-        </Alert>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>{recommendation.type}</Alert.Title>
+            {recommendation.type !== "Outdoor run" && (
+              <Alert.Description>{recommendation.reason}</Alert.Description>
+            )}
+          </Alert.Content>
+        </Alert.Root>
 
-        {isBestDay && (
-          <Text color="green.300" fontWeight="bold" fontSize="sm" mt={2}>
-            Best day for outdoor run!
-          </Text>
-        )}
         {suitable && (
           <Box mt={2}>
-            <Text color="green.300" fontWeight="bold" fontSize="sm">
+            <Text color="white" fontWeight="bold" fontSize="sm">
               Suitable for hourly run!
             </Text>
-            <Text color="green.300" fontSize="xs">
+            <Text color="white" fontSize="xs">
               Best hours: {bestHours.join(", ")}
             </Text>
           </Box>
         )}
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };
 

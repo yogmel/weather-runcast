@@ -15,7 +15,6 @@ import { Sun, Cloud, CloudRain, Wind } from "lucide-react";
 interface WeatherCardProps {
   day: DailyWeather;
   alerts?: WeatherAlert[];
-  isBestDay: boolean;
   minTemp: number;
   maxTemp: number;
   hourlyForecast: HourlyWeather[];
@@ -24,7 +23,6 @@ interface WeatherCardProps {
 const WeatherCard: React.FC<WeatherCardProps> = ({
   day,
   alerts,
-  isBestDay,
   minTemp,
   maxTemp,
   hourlyForecast,
@@ -69,56 +67,55 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
       color="white"
       transition="all 0.3s"
       _hover={{ transform: "scale(1.05)" }}
-      border={isBestDay ? "2px solid" : "none"}
-      borderColor={isBestDay ? "green.400" : "transparent"}
+      borderColor={"transparent"}
       display="flex"
       flexDirection="column"
-      className="max-w-xs w-full"
+      w={"250px"}
     >
-      <Card.Header p={0} mb={2}>
-        <Heading size="md">{date}</Heading>
+      <Card.Header p={0} mb={4}>
+        <Heading size="lg" textAlign={"center"}>
+          {date}
+        </Heading>
       </Card.Header>
       <Card.Body p={0}>
-        <Flex align="center" justify="space-between" mb={2}>
+        <Flex align="center" justify="center" mb={2} gap="5">
           {getWeatherIcon(day.weather[0].icon)}
           <Text fontSize="lg">
             {day.temp.min}°C / {day.temp.max}°C
           </Text>
         </Flex>
-        <Text fontSize="sm" mb={1}>
-          Conditions: {day.weather[0].description}
-        </Text>
-        <Text fontSize="sm" mb={1}>
-          Sunset: {sunsetTime}
-        </Text>
-        <Flex fontSize="sm" mb={2} align="center">
-          Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
-          <Box as={Wind} ml={1} w={4} h={4} />
-        </Flex>
+
+        <Box marginY={2}>
+          <Text fontSize="sm" mb={1}>
+            Conditions: {day.weather[0].description}
+          </Text>
+          <Text fontSize="sm" mb={1}>
+            Sunset: {sunsetTime}
+          </Text>
+          <Flex fontSize="sm" mb={2} align="center">
+            Wind: {day.wind_speed} m/s {day.wind_deg}°{" "}
+            <Box as={Wind} ml={1} w={4} h={4} />
+          </Flex>
+        </Box>
+
         <Alert.Root
           status={recommendation.type === "Outdoor run" ? "success" : "error"}
         >
           <Alert.Indicator />
-          <Alert.Title>{recommendation.type}</Alert.Title>
-          <Alert.Description>
-            {" "}
-            {recommendation.type === "Outdoor run"
-              ? "Outdoor run"
-              : `Indoor run: ${recommendation.reason}`}
-          </Alert.Description>
+          <Alert.Content>
+            <Alert.Title>{recommendation.type}</Alert.Title>
+            {recommendation.type !== "Outdoor run" && (
+              <Alert.Description>{recommendation.reason}</Alert.Description>
+            )}
+          </Alert.Content>
         </Alert.Root>
 
-        {isBestDay && (
-          <Text color="green.300" fontWeight="bold" fontSize="sm" mt={2}>
-            Best day for outdoor run!
-          </Text>
-        )}
         {suitable && (
           <Box mt={2}>
-            <Text color="green.300" fontWeight="bold" fontSize="sm">
+            <Text color="white" fontWeight="bold" fontSize="sm">
               Suitable for hourly run!
             </Text>
-            <Text color="green.300" fontSize="xs">
+            <Text color="white" fontSize="xs">
               Best hours: {bestHours.join(", ")}
             </Text>
           </Box>

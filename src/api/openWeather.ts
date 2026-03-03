@@ -1,11 +1,22 @@
+import { AxiosError } from "axios";
 import { LatLng, WeatherForecast } from "../types";
 
-const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const GEOCODING_BASE_URL = "http://api.openweathermap.org/geo/1.0/direct";
 
+interface CoordinateResponse {
+  success: boolean;
+  data?: LatLng;
+  error?: {
+    message: string;
+    status?: number;
+    details?: any;
+  };
+}
+
 export const getLatLngFromLocation = async (
-  locationName: string
-): Promise<LatLng | null> => {
+  API_KEY: string,
+  locationName: string,
+): Promise<CoordinateResponse | null> => {
   if (!API_KEY) {
     console.error("OpenWeather API key is not set in environment variables.");
     return null;
@@ -13,7 +24,7 @@ export const getLatLngFromLocation = async (
 
   try {
     const response = await fetch(
-      `${GEOCODING_BASE_URL}?q=${locationName}&limit=1&appid=${API_KEY}`
+      `${GEOCODING_BASE_URL}?q=${locationName}&limit=1&appid=${API_KEY}`,
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -22,23 +33,48 @@ export const getLatLngFromLocation = async (
 
     if (data && data.length > 0) {
       const { lat, lon } = data[0];
-      return { lat, lng: lon };
+      return { success: true, data: { lat, lng: lon } };
     } else {
       console.warn(`No coordinates found for location: ${locationName}`);
       return null;
     }
   } catch (error) {
-    console.error("Error fetching coordinates:", error);
-    return null;
+    const axiosError = error as AxiosError;
+
+    console.error("Error details:", {
+      message: axiosError.message,
+      status: axiosError.response?.status,
+      data: axiosError.response?.data,
+    });
+
+    return {
+      success: false,
+      error: {
+        message: axiosError.message || "Failed to fetch data",
+        status: axiosError.response?.status,
+        details: axiosError.response?.data,
+      },
+    };
   }
 };
+
+interface WeatherResponse {
+  success: boolean;
+  data?: WeatherForecast;
+  error?: {
+    message: string;
+    status?: number;
+    details?: any;
+  };
+}
 
 const ONE_CALL_BASE_URL = "https://api.openweathermap.org/data/3.0/onecall";
 
 export const getWeatherForecast = async (
-  lat: number,
-  lon: number
-): Promise<WeatherForecast | null> => {
+  API_KEY: string,
+  lat: string,
+  lng: string,
+): Promise<WeatherResponse | null> => {
   if (!API_KEY) {
     console.error("OpenWeather API key is not set in environment variables.");
     return null;
@@ -46,15 +82,31 @@ export const getWeatherForecast = async (
 
   try {
     const response = await fetch(
-      `${ONE_CALL_BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely&appid=${API_KEY}&units=metric`
+      `${ONE_CALL_BASE_URL}?lat=${lat}&lon=${lng}&exclude=minutely&appid=${API_KEY}&units=metric`,
     );
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    return data;
+
+    return { success: true, data: { ...data } };
   } catch (error) {
-    console.error("Error fetching weather forecast:", error);
-    return null;
+    const axiosError = error as AxiosError;
+
+    console.error("Error details:", {
+      message: axiosError.message,
+      status: axiosError.response?.status,
+      data: axiosError.response?.data,
+    });
+
+    return {
+      success: false,
+      error: {
+        message: axiosError.message || "Failed to fetch data",
+        status: axiosError.response?.status,
+        details: axiosError.response?.data,
+      },
+    };
   }
 };

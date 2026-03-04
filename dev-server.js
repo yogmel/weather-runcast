@@ -16,7 +16,7 @@ const API_KEY = process.env.OPENWEATHER_API_KEY;
 
 app.get("/api/location", async (req, res) => {
   console.log("Function called with method:", req.method);
-  console.log("Query params:", req.query);
+  console.log("Query params: DEV-SERVER", req.query);
 
   try {
     const result = await getLatLngFromLocation(
@@ -37,7 +37,7 @@ app.get("/api/location", async (req, res) => {
 
 app.get("/api/weather", async (req, res) => {
   console.log("Function called with method:", req.method);
-  console.log("Query params:", req.query);
+  console.log("Query params: DEV-SERVER", req.query);
 
   try {
     const result = await getWeatherForecast(

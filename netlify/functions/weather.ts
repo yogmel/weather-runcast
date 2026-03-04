@@ -5,9 +5,9 @@ export const handler: Handler = async (event) => {
   const params = event.queryStringParameters;
 
   console.log("Function called with method:", event.httpMethod);
-  console.log("Query params:", event.queryStringParameters);
+  console.log("Query params: NETLIFY", event.queryStringParameters);
 
-  const API_KEY = process.env.VITE_OPENWEATHER_API_KEY;
+  const API_KEY = process.env.OPENWEATHER_API_KEY;
 
   if (event.httpMethod !== "GET") {
     return {

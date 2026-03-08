@@ -25,8 +25,6 @@ export const WeatherResultCard: FC<WeatherResultCardProps> = ({
 
   const [forecast, setForecast] = useState<WeatherForecast | null>(null);
 
-  console.log("forecast", forecast);
-
   useEffect(() => {
     const fetchWeather = async () => {
       if (weatherData.weather) {

@@ -22,8 +22,6 @@ export const WeatherResult = ({
 
   const { coordinates } = useLocation({ location });
 
-  console.log("latLng", latLng);
-
   useEffect(() => {
     setLoading(true);
     setError(null);

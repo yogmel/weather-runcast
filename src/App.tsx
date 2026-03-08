@@ -28,9 +28,6 @@ function App() {
     }
   }, [location]);
 
-  console.log("location", location);
-  console.log("editingLocation", editingLocation);
-
   return (
     <Box
       minH="100vh"

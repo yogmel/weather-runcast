@@ -50,7 +50,7 @@ export const getLatLngFromLocation = async (
     return {
       success: false,
       error: {
-        message: axiosError.message || "Failed to fetch data",
+        message: axiosError.message || "Failed to fetch coordinate data",
         status: axiosError.response?.status,
         details: axiosError.response?.data,
       },
@@ -103,7 +103,7 @@ export const getWeatherForecast = async (
     return {
       success: false,
       error: {
-        message: axiosError.message || "Failed to fetch data",
+        message: axiosError.message || "Failed to fetch weather data",
         status: axiosError.response?.status,
         details: axiosError.response?.data,
       },

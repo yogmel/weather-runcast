@@ -1,11 +1,11 @@
 import { AxiosError } from "axios";
-import { LatLng, WeatherForecast } from "../types";
+import { Coordinates, WeatherForecast } from "../types";
 
 const GEOCODING_BASE_URL = "http://api.openweathermap.org/geo/1.0/direct";
 
 interface CoordinateResponse {
   success: boolean;
-  data?: LatLng;
+  data?: Coordinates;
   error?: {
     message: string;
     status?: number;

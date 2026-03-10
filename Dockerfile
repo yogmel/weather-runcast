@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 5173
 
 # Start the dev server
-CMD ["bun", "run", "dev", "--host"]
+CMD ["bun", "dev"]

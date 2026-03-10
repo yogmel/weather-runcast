@@ -32,8 +32,8 @@ export const getLatLngFromLocation = async (
     const data = await response.json();
 
     if (data && data.length > 0) {
-      const { lat, lon } = data[0];
-      return { success: true, data: { lat, lng: lon } };
+      const { name, lat, lon } = data[0];
+      return { success: true, data: { name, lat, lng: lon } };
     } else {
       console.warn(`No coordinates found for location: ${locationName}`);
       return null;

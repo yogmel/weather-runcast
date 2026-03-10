@@ -13,8 +13,8 @@ import { WeatherResult } from "./components/WeatherResult";
 
 function App() {
   const [editingLocation, setEditingLocation] = useState<string>("");
-  const [location, setLocation] = useState<string>(
-    localStorage.getItem("lastLocation") || "",
+  const [location, setLocation] = useState<string | null>(
+    localStorage.getItem("lastLocation") || null,
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [minTemp, setMinTemp] = useState<string>("10"); // Default min temperature
@@ -46,9 +46,8 @@ function App() {
           <Field.Label>Location:</Field.Label>
           <Input
             type="text"
-            value={editingLocation}
             onChange={(e) => setEditingLocation(e.target.value)}
-            placeholder="Enter location (e.g., Sao Paulo)"
+            placeholder="Enter location (e.g., São Paulo)"
             bg="white"
             color="gray.800"
             _placeholder={{ color: "gray.400" }}
@@ -100,7 +99,7 @@ function App() {
         </Text>
       )}
 
-      {location !== "" && (
+      {location !== null && (
         <WeatherResult
           location={location}
           setLoading={setLoading}

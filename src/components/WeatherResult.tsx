@@ -1,7 +1,9 @@
-import { useLocation } from "@/hooks/useLocation";
 import { useEffect, useState } from "react";
-import { LatLng } from "@/types";
-import { WeatherResultCard } from "./WeatherResultCard";
+import { Coordinates } from "@/types";
+import { useLocationQuery } from "@/api/useLocationQuery";
+import { useForecastQuery } from "@/api/useForecastQuery";
+import { ScrollArea, Flex, Spinner } from "@chakra-ui/react";
+import WeatherCard from "./WeatherCard";
 
 interface WeatherResultProps {
   location: string;
@@ -18,38 +20,58 @@ export const WeatherResult = ({
   setError,
   setLoading,
 }: WeatherResultProps) => {
-  const [latLng, setLatLng] = useState<LatLng | null>(null);
+  const [latLng, setLatLng] = useState<Coordinates | null>(null);
 
-  const { coordinates } = useLocation({ location });
+  const { data: coordinates, isLoading } = useLocationQuery({
+    location,
+    enabled: location !== "",
+  });
+
+  const { data: forecast, isLoading: isForecastLoading } = useForecastQuery({
+    coordinates: { lat: latLng?.lat ?? 0, lng: latLng?.lng ?? 0 },
+    enabled: latLng !== null,
+  });
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(isLoading);
     setError(null);
 
-    try {
-      if (coordinates !== null) {
-        setLatLng(coordinates);
-      } else {
-        setError("Location not found. Please try again.");
-      }
-    } catch (err) {
-      setError("Failed to fetch location data.");
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (coordinates !== undefined) {
+      setLatLng(coordinates);
+    } else {
+      setError("Location not found. Please try again.");
     }
-  }, [coordinates]);
+  }, [coordinates, isLoading]);
 
   return (
     <>
-      {latLng && (
-        <WeatherResultCard
-          latLng={latLng}
-          minTemp={minTemp}
-          maxTemp={maxTemp}
-          setLoading={setLoading}
-          setError={setError}
-        />
+      {isForecastLoading && <Spinner />}
+      {!isForecastLoading && latLng && forecast !== undefined && (
+        <ScrollArea.Root width="100vw" size="xs" p={5}>
+          <ScrollArea.Viewport>
+            <ScrollArea.Content>
+              <Flex gap="5">
+                {forecast &&
+                  forecast.daily.slice(0, 7).map((day) => (
+                    <WeatherCard
+                      key={day.dt}
+                      day={day}
+                      alerts={forecast.alerts}
+                      minTemp={parseInt(minTemp)}
+                      maxTemp={parseInt(maxTemp)}
+                      hourlyForecast={forecast.hourly.filter((hour) => {
+                        const dayStart = day.dt;
+                        const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds
+                        return hour.dt >= dayStart && hour.dt < dayEnd;
+                      })}
+                    />
+                  ))}
+              </Flex>
+            </ScrollArea.Content>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="horizontal" />
+          <ScrollArea.Corner />
+        </ScrollArea.Root>
       )}
     </>
   );

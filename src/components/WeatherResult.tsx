@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Coordinates } from "@/types";
 import { useLocationQuery } from "@/api/useLocationQuery";
 import { useForecastQuery } from "@/api/useForecastQuery";
-import { ScrollArea, Flex, Spinner } from "@chakra-ui/react";
+import { ScrollArea, Flex, Spinner, Heading } from "@chakra-ui/react";
 import WeatherCard from "./WeatherCard";
 
 interface WeatherResultProps {
@@ -45,33 +45,37 @@ export const WeatherResult = ({
 
   return (
     <>
-      {isForecastLoading && <Spinner />}
-      {!isForecastLoading && latLng && forecast !== undefined && (
-        <ScrollArea.Root width="100vw" size="xs" p={5}>
-          <ScrollArea.Viewport>
-            <ScrollArea.Content>
-              <Flex gap="5">
-                {forecast &&
-                  forecast.daily.slice(0, 7).map((day) => (
-                    <WeatherCard
-                      key={day.dt}
-                      day={day}
-                      alerts={forecast.alerts}
-                      minTemp={parseInt(minTemp)}
-                      maxTemp={parseInt(maxTemp)}
-                      hourlyForecast={forecast.hourly.filter((hour) => {
-                        const dayStart = day.dt;
-                        const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds
-                        return hour.dt >= dayStart && hour.dt < dayEnd;
-                      })}
-                    />
-                  ))}
-              </Flex>
-            </ScrollArea.Content>
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar orientation="horizontal" />
-          <ScrollArea.Corner />
-        </ScrollArea.Root>
+      {isLoading || (isForecastLoading && <Spinner />)}
+      {!isLoading && !isForecastLoading && latLng && forecast !== undefined && (
+        <>
+          <Heading>Showing Forecast for {coordinates?.name}</Heading>
+
+          <ScrollArea.Root width="100vw" size="xs" p={5}>
+            <ScrollArea.Viewport>
+              <ScrollArea.Content>
+                <Flex gap="5">
+                  {forecast &&
+                    forecast.daily.slice(0, 7).map((day) => (
+                      <WeatherCard
+                        key={day.dt}
+                        day={day}
+                        alerts={forecast.alerts}
+                        minTemp={parseInt(minTemp)}
+                        maxTemp={parseInt(maxTemp)}
+                        hourlyForecast={forecast.hourly.filter((hour) => {
+                          const dayStart = day.dt;
+                          const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds
+                          return hour.dt >= dayStart && hour.dt < dayEnd;
+                        })}
+                      />
+                    ))}
+                </Flex>
+              </ScrollArea.Content>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar orientation="horizontal" />
+            <ScrollArea.Corner />
+          </ScrollArea.Root>
+        </>
       )}
     </>
   );

@@ -4,7 +4,7 @@ import { getApiUrl } from "./config";
 import { Coordinates, WeatherForecast } from "@/types";
 
 interface UseForecastQueryParam {
-  coordinates: Coordinates;
+  coordinates: Pick<Coordinates, "lat" | "lng">;
   enabled?: boolean;
 }
 

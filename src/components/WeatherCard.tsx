@@ -38,15 +38,22 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     minTemp,
     maxTemp,
   );
+
   const date = new Date(day.dt * 1000).toLocaleDateString();
+  const dayOfWeek = new Date(day.dt * 1000).toLocaleDateString("en-US", {
+    weekday: "short",
+  });
+
   const sunsetTime = new Date(day.sunset * 1000).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const sunriseTime = new Date(day.sunrise * 1000).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
   });
 
   const getWeatherIcon = (iconCode: string) => {
-    // You would typically map OpenWeatherMap icon codes to actual icon components
-    // For simplicity, using a few examples
     if (iconCode.includes("sun"))
       return <Sun className="w-8 h-8 text-yellow-500" />;
     if (iconCode.includes("cloud"))
@@ -74,12 +81,12 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
     >
       <Card.Header p={0} mb={4}>
         <Heading size="lg" textAlign={"center"}>
-          {date}
+          {date} - {dayOfWeek}
         </Heading>
       </Card.Header>
       <Card.Body p={0}>
         <Flex align="center" justify="center" mb={2} gap="5">
-          {getWeatherIcon(day.weather[0].icon)}
+          {getWeatherIcon(day.weather[0].description)}
           <Text fontSize="lg">
             {day.temp.min}°C / {day.temp.max}°C
           </Text>
@@ -87,7 +94,10 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
 
         <Box marginY={2}>
           <Text fontSize="sm" mb={1}>
-            Conditions: {day.weather[0].description}
+            Conditions: {day.summary}
+          </Text>
+          <Text fontSize="sm" mb={1}>
+            Sunrise: {sunriseTime}
           </Text>
           <Text fontSize="sm" mb={1}>
             Sunset: {sunsetTime}

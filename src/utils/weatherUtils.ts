@@ -5,19 +5,19 @@ import type {
   RunRecommendation,
 } from "../types";
 
+const MAX_RAIN_VOLUME = 2; // mm (any rain makes it unsuitable)
+
 export const getRunRecommendation = (
   day: DailyWeather,
   minTemp: number,
   maxTemp: number,
   alerts?: WeatherAlert[],
 ): RunRecommendation => {
-  const maxRainVolume = 2; // mm (any rain makes it unsuitable)
-
-  if ((day.rain || 0) > maxRainVolume) {
+  if ((day.rain || 0) > MAX_RAIN_VOLUME) {
     return { type: "Indoor run", reason: "It's raining" };
   }
 
-  const isIdealTemperature = day.temp.min >= minTemp && day.temp.max <= maxTemp;
+  const isIdealTemperature = day.temp.min <= maxTemp && day.temp.max >= minTemp;
   const isNoAlerts = !(alerts && alerts.length > 0);
 
   if (isIdealTemperature && isNoAlerts) {
@@ -39,9 +39,7 @@ export const getHourlyRunRecommendation = (
   minTemp: number,
   maxTemp: number,
 ): RunRecommendation => {
-  const maxRainVolume = 0; // mm (any rain makes it unsuitable)
-
-  if ((hour.rain?.["1h"] || 0) > maxRainVolume) {
+  if ((hour.rain?.["1h"] || 0) > MAX_RAIN_VOLUME) {
     return { type: "Indoor run", reason: "It's raining" };
   }
 
@@ -49,13 +47,8 @@ export const getHourlyRunRecommendation = (
 
   if (isIdealTemperature) {
     return { type: "Outdoor run" };
-  } else {
-    let reason = "";
-    if (!isIdealTemperature) {
-      reason += "Temperature is not ideal. ";
-    }
-    return { type: "Indoor run", reason: reason.trim() };
   }
+  return { type: "Indoor run", reason: "Temperature is not ideal. " };
 };
 
 export const getBestHourlyRunTimes = (
@@ -64,8 +57,8 @@ export const getBestHourlyRunTimes = (
   maxTemp: number,
 ): { suitable: boolean; bestHours: string[] } => {
   const suitableHours: HourlyWeather[] = [];
-  const startHour = 9; // 9 AM
-  const endHour = 20; // 8 PM
+  const startHour = 8;
+  const endHour = 20;
 
   hourlyForecast.forEach((hour) => {
     const hourOfDay = new Date(hour.dt * 1000).getHours();

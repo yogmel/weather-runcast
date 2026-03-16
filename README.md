@@ -27,13 +27,7 @@ This is a single-page web application that helps runners decide whether to run o
     cd weather-runcast
     ```
 
-2.  **Install dependencies:**
-
-    ```bash
-    bun install
-    ```
-
-3.  **Set up Environment Variables:**
+2.  **Set up Environment Variables:**
     Create a `.env` file in the `weather-runcast/` directory with your OpenWeatherMap API key:
 
     ```
@@ -42,15 +36,25 @@ This is a single-page web application that helps runners decide whether to run o
 
     Get the key [here](https://openweathermap.org/) and replace `your_open_weather_api_key` with your actual API key from OpenWeatherMap.
 
-4.  **Run the development server:**
+Then, choose either Bun or Docker:
+
+### Start using Bun
+
+1.  **Install dependencies:**
+
+    ```bash
+    bun install
+    ```
+
+2.  **Run the development server:**
     ```bash
     bun dev
     ```
     The app will be accessible at `http://localhost:5173` (or another port if 5173 is in use).
 
-### Docker Development - need revision
+### Start using Docker
 
-You can run the application using Docker for a consistent development environment.
+You can run the application using Docker for a consistent development environment. In this case, you won't need to `bun install` nor `bun dev`.
 
 **Prerequisites:**
 
@@ -60,7 +64,7 @@ You can run the application using Docker for a consistent development environmen
 
 1. Build and start the container:
    ```bash
-   docker-compose up --build
+   bun docker
    ```
 2. Access the application at `http://localhost:5173`.
 

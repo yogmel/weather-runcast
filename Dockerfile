@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 5173
 
 # Start the dev server
-CMD ["bun", "dev"]
+CMD ["bunx", "concurrently", "bun run dev:server", "bun dev:vite"]

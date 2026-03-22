@@ -34,7 +34,7 @@ export const getRunRecommendation = (
   }
 };
 
-export const getHourlyRunRecommendation = (
+const getHourlyRunRecommendation = (
   hour: HourlyWeather,
   minTemp: number,
   maxTemp: number,

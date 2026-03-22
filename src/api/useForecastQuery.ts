@@ -15,7 +15,7 @@ export const useForecastQuery = ({
   const { lat, lng } = coordinates;
 
   return useQuery({
-    queryKey: ["forecast", coordinates],
+    queryKey: ["forecast", lat, lng],
     queryFn: async (): Promise<WeatherForecast> => {
       const response = await axios.get(
         getApiUrl("weather", `lat=${lat}&lng=${lng}`),

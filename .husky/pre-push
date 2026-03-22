@@ -1,5 +1,3 @@
 bun lint --quiet
-bunx run knip --exports
+bun run knip --exports
 bun test --silent
-
-exit 1

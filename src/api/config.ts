@@ -1,6 +1,6 @@
 const isDev = import.meta.env.DEV;
 
-export const API_BASE_URL = isDev
+const API_BASE_URL = isDev
   ? "/api" // Local dev server
   : "/.netlify/functions"; // Production Netlify
 

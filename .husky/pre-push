@@ -1,0 +1,3 @@
+bun lint --quiet
+bun run knip --exports
+bun test --silent

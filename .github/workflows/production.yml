@@ -1,0 +1,220 @@
+name: Production deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-flight runs for the same branch when a new push arrives.
+# Saves minutes on rapid pushes during development.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUN_VERSION: latest
+
+# ── Jobs run in this order: ───────────────────────────────────────────────────
+#
+#   [typecheck] ─┐
+#                ├─► [test] ─► [build] ─► [deploy]  (main only)
+#   [lint]      ─┘
+#
+# Typecheck and lint are independent and run in parallel.
+# Test waits for both — no point running tests if the code doesn't compile.
+# Build only starts once tests pass.
+# Deploy only runs on a push to main (not on PRs).
+
+jobs:
+  # ── 1a. Type-check ──────────────────────────────────────────────────────────
+  typecheck:
+    name: Type-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      # Cache node_modules keyed on bun.lock so installs are skipped on
+      # re-runs when nothing changed.
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # tsc -b is used here rather than inside `bun run build` so that
+      # type errors fail fast without paying for the full Vite bundle.
+      - name: Type-check
+        run: bunx tsc -b --noEmit
+
+  # ── 1b. Lint ────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+  # ── 2. Test ─────────────────────────────────────────────────────────────────
+  # Requires both typecheck and lint to pass first.
+  # Once you add Vitest, this job runs your suite and uploads a coverage
+  # report as an artifact reviewable on every PR.
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [typecheck, lint]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run tests
+        run: bun run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  # ── 3. Build ─────────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+        env:
+          # The API key is not embedded in the client bundle — it's only
+          # used server-side at runtime. Listed here so Vite doesn't throw
+          # on any stray import.meta.env reference during the build step.
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+
+      # Upload dist/ so the deploy job can consume it without rebuilding.
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+          # PRs don't reach deploy, so 1 day is plenty.
+          # Main branch artifacts are consumed immediately by deploy.
+          retention-days: 1
+
+  # ── 4. Deploy ────────────────────────────────────────────────────────────────
+  # Only runs on pushes to main — PRs get Netlify deploy previews automatically
+  # via Netlify's own GitHub integration, so no need to replicate that here.
+  deploy:
+    name: Deploy to Netlify
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    # Surfaces the live URL in the GitHub UI once the job completes.
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.NETLIFY_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      # Full install (not --production) because netlify-cli needs to
+      # bundle the Netlify functions with esbuild at deploy time.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+
+      - name: Deploy
+        id: deploy
+        run: |
+          DEPLOY_OUTPUT=$(bunx netlify-cli deploy \
+            --prod \
+            --dir=dist \
+            --functions=netlify/functions \
+            --message="Deploy ${{ github.sha }}" \
+            --json)
+
+          echo "$DEPLOY_OUTPUT"
+
+          # Parse the live URL and expose it to the environment block above.
+          NETLIFY_URL=$(echo "$DEPLOY_OUTPUT" | python3 -c \
+            "import sys,json; d=json.load(sys.stdin); print(d.get('deploy_url') or d.get('url',''))")
+          echo "NETLIFY_URL=$NETLIFY_URL" >> $GITHUB_OUTPUT
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}

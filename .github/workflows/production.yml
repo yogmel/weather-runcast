@@ -1,4 +1,4 @@
-name: CI/CD
+name: Production deployment
 
 on:
   push:
@@ -107,38 +107,16 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # ── Uncomment once you add Vitest ──────────────────────────────────────
-      # Install with:
-      #   bun add -d vitest @testing-library/react @testing-library/jest-dom jsdom
-      # Add to vite.config.ts:
-      #   test: { environment: "jsdom", coverage: { provider: "v8" } }
-      # Add to package.json scripts:
-      #   "test": "vitest",
-      #   "test:coverage": "vitest run --coverage"
-      #
-      # - name: Run tests
-      #   run: bun run test:coverage
-      #
-      # - name: Upload coverage report
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: coverage
-      #     path: coverage/
-      #     retention-days: 7
-      # ───────────────────────────────────────────────────────────────────────
+      - name: Run tests
+        run: bun run test:coverage
 
-      # Temporary placeholder — warns loudly but doesn't block the pipeline
-      # while the test suite is being bootstrapped. Remove once tests exist.
-      - name: Check test runner is configured
-        run: |
-          if grep -q '"test"' package.json; then
-            bun run test --run
-          else
-            echo "⚠️  No test script found in package.json."
-            echo "    Add Vitest and uncomment the test steps above."
-            echo "    bun add -d vitest @testing-library/react @testing-library/jest-dom jsdom"
-          fi
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
 
   # ── 3. Build ─────────────────────────────────────────────────────────────────
   build:

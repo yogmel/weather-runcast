@@ -19,7 +19,7 @@ export const handler: Handler = async (event) => {
 
   const distinctId =
     event.headers["x-posthog-distinct-id"] ||
-    event.requestContext?.identity?.sourceIp ||
+    // event.requestContext?.identity?.sourceIp ||
     "anonymous";
 
   if (event.httpMethod !== "GET") {

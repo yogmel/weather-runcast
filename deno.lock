@@ -21,10 +21,11 @@
         "npm:@tanstack/react-query@^5.90.21",
         "npm:@types/cors@^2.8.19",
         "npm:@types/express@^5.0.6",
-        "npm:@types/node@^24.10.4",
+        "npm:@types/node@^25.5.0",
         "npm:@types/react-dom@^19.2.3",
         "npm:@types/react@^19.2.14",
         "npm:@vitejs/plugin-react@^5.1.2",
+        "npm:@vitest/coverage-v8@4.1.0",
         "npm:autoprefixer@^10.4.27",
         "npm:axios@^1.13.6",
         "npm:concurrently@^9.2.1",
@@ -35,15 +36,20 @@
         "npm:eslint@^9.39.2",
         "npm:express@^5.2.1",
         "npm:globals@^16.5.0",
+        "npm:husky@^9.1.7",
+        "npm:knip@^6.0.1",
+        "npm:lint-staged@^16.4.0",
         "npm:lucide-react@0.545",
         "npm:next-themes@~0.4.6",
         "npm:postcss@^8.5.8",
+        "npm:posthog-node@^5.28.5",
         "npm:react-dom@^19.2.4",
         "npm:react-icons@^5.6.0",
         "npm:react@^19.2.4",
         "npm:typescript-eslint@^8.57.0",
-        "npm:typescript@~5.9.3",
-        "npm:vite@^7.3.1"
+        "npm:typescript@^5.9.3",
+        "npm:vite@^7.3.1",
+        "npm:vitest@^4.1.0"
       ]
     }
   }

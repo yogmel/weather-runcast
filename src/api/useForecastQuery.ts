@@ -24,5 +24,8 @@ export const useForecastQuery = ({
       return response.data;
     },
     enabled,
+    staleTime: 10 * 60 * 1000, // 10 min
+    gcTime: 30 * 60 * 1000,    // 30 min
+
   });
 };

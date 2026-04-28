@@ -15,7 +15,7 @@ export interface WeatherForecast {
   alerts?: WeatherAlert[];
 }
 
-export interface CurrentWeather {
+interface CurrentWeather {
   dt: number;
   sunrise: number;
   sunset: number;
@@ -87,7 +87,7 @@ export interface HourlyWeather {
   };
 }
 
-export interface WeatherCondition {
+interface WeatherCondition {
   id: number;
   main: string;
   description: string;

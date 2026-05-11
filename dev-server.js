@@ -15,17 +15,19 @@ app.use(express.json());
 
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 
-const posthog = new PostHog(process.env.POSTHOG_KEY, {
-  host: process.env.POSTHOG_HOST,
-  enableExceptionAutocapture: true,
-});
+const posthog = process.env.POSTHOG_KEY
+  ? new PostHog(process.env.POSTHOG_KEY, {
+      host: process.env.POSTHOG_HOST,
+      enableExceptionAutocapture: true,
+    })
+  : null;
 
 process.on("SIGINT", async () => {
-  await posthog.shutdown();
+  if (posthog) await posthog.shutdown();
   process.exit(0);
 });
 process.on("SIGTERM", async () => {
-  await posthog.shutdown();
+  if (posthog) await posthog.shutdown();
   process.exit(0);
 });
 
@@ -43,7 +45,7 @@ app.get("/api/location", async (req, res) => {
     );
 
     if (result.success) {
-      posthog.capture({
+      posthog?.capture({
         distinctId,
         event: "location_searched",
         properties: {
@@ -54,7 +56,7 @@ app.get("/api/location", async (req, res) => {
       return res.status(200).json(result.data);
     }
 
-    posthog.capture({
+    posthog?.capture({
       distinctId,
       event: "location_not_found",
       properties: {
@@ -65,7 +67,7 @@ app.get("/api/location", async (req, res) => {
     return res.status(result.error?.status || 500).json(result.error);
   } catch (error) {
     console.error("Error in location endpoint:", error);
-    posthog.captureException(error, distinctId);
+    posthog?.captureException(error, distinctId);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -85,7 +87,7 @@ app.get("/api/weather", async (req, res) => {
     );
 
     if (result.success) {
-      posthog.capture({
+      posthog?.capture({
         distinctId,
         event: "weather_forecast_retrieved",
         properties: {
@@ -96,7 +98,7 @@ app.get("/api/weather", async (req, res) => {
       return res.status(200).json(result.data);
     }
 
-    posthog.capture({
+    posthog?.capture({
       distinctId,
       event: "api_error",
       properties: {
@@ -108,7 +110,7 @@ app.get("/api/weather", async (req, res) => {
     return res.status(result.error?.status || 500).json(result.error);
   } catch (error) {
     console.error("Error in weather endpoint:", error);
-    posthog.captureException(error, distinctId);
+    posthog?.captureException(error, distinctId);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

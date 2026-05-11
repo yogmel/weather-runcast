@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { Coordinates, WeatherForecast } from "../types";
 
 const GEOCODING_BASE_URL = "http://api.openweathermap.org/geo/1.0/direct";
@@ -23,13 +23,13 @@ export const getLatLngFromLocation = async (
   }
 
   try {
-    const response = await fetch(
+    const response = await axios.get(
       `${GEOCODING_BASE_URL}?q=${locationName}&limit=1&appid=${API_KEY}`,
     );
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data = await response.data;
 
     if (data && data.length > 0) {
       const { name, lat, lon } = data[0];
@@ -81,14 +81,14 @@ export const getWeatherForecast = async (
   }
 
   try {
-    const response = await fetch(
+    const response = await axios.get(
       `${ONE_CALL_BASE_URL}?lat=${lat}&lon=${lng}&exclude=minutely&appid=${API_KEY}&units=metric`,
     );
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data = await response.data;
 
     return { success: true, data: { ...data } };
   } catch (error) {

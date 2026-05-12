@@ -54,7 +54,9 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   });
 
   const getWeatherIcon = (iconCode: string) => {
-    if (iconCode.includes("sun"))
+    // Open Weather description map:
+    // https://openweathermap.org/api/weather-conditions#Weather-Condition-Codes-2
+    if (iconCode.includes("clear sky"))
       return <Sun className="w-8 h-8 text-yellow-500" />;
     if (iconCode.includes("cloud"))
       return <Cloud className="w-8 h-8 text-gray-400" />;

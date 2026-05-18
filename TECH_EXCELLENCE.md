@@ -15,14 +15,14 @@ all component/hook logic are untested.
 **Improvements:**
 
 - [ ] Add unit tests for `getRunRecommendation`: happy path (outdoor), temperature out of
-  range, active weather alerts, combined conditions.
+      range, active weather alerts, combined conditions.
 - [ ] Add unit tests for `getBestHourlyRunTimes`: suitable hours found, fewer than 3 suitable
-  hours, no suitable hours, edge cases at 8am/8pm boundary.
+      hours, no suitable hours, edge cases at 8am/8pm boundary.
 - [ ] Add component tests (Vitest + React Testing Library) for `WeatherCard`: renders correct
-  recommendation badge, renders best hours when suitable, hides best hours when not suitable.
+      recommendation badge, renders best hours when suitable, hides best hours when not suitable.
 - [ ] Add component test for `App`: location persists to `localStorage` on search.
 - [ ] Enforce a coverage threshold in `vite.config.ts` (e.g. 80 % lines/branches) so CI fails
-  if coverage regresses.
+      if coverage regresses.
 
 ---
 
@@ -36,16 +36,16 @@ incorrect — `error.response` will always be `undefined` and status codes are s
 ```ts
 // current (wrong)
 const axiosError = error as AxiosError;
-axiosError.response?.status // always undefined
+axiosError.response?.status; // always undefined
 
 // fix: use native Error / Response
 const err = error as Error;
 return { success: false, error: { message: err.message } };
 ```
 
-- [ ] Remove the `AxiosError` import and cast in `openWeather.ts`.
-- [ ] Parse the HTTP status from the `Response` object before throwing so it is available in
-  the error envelope.
+- [x] Remove the `AxiosError` import and cast in `openWeather.ts`.
+- [x] Parse the HTTP status from the `Response` object before throwing so it is available in
+      the error envelope.
 
 ### 2b. `getWeatherIcon` never matches "sun"
 
@@ -53,9 +53,9 @@ The function checks `iconCode.includes("sun")` but the argument passed is
 `day.weather[0].description` (e.g. `"broken clouds"`, `"clear sky"`), not the icon code
 (`"01d"`). "sun" never appears in OWM description strings.
 
-- [ ] Either map OWM icon codes (`01d/01n` → Sun, `09d` → CloudRain, etc.) or match against
-  description strings that actually contain recognisable words (`"clear"`, `"rain"`,
-  `"cloud"`).
+- [x] Either map OWM icon codes (`01d/01n` → Sun, `09d` → CloudRain, etc.) or match against
+      description strings that actually contain recognisable words (`"clear"`, `"rain"`,
+      `"cloud"`).
 
 ### 2c. Premature error shown before location query settles
 
@@ -72,7 +72,7 @@ render in `WeatherResult`. Keeping them as strings increases chance of `NaN` bug
 clutters parsing logic.
 
 - [ ] Change state to `useState<number>` and parse once in the `onChange` handler (or use a
-  controlled numeric input).
+      controlled numeric input).
 
 ---
 
@@ -104,8 +104,8 @@ Both `location.ts` and `weather.ts` construct `new PostHog(...)` inside the hand
 meaning a new client is created and torn down on every invocation.
 
 - [ ] Extract a shared `getPostHogClient()` helper at module level (or a shared
-  `netlify/lib/posthog.ts`) and reuse it. The client already supports batching; a singleton
-  is the correct model.
+      `netlify/lib/posthog.ts`) and reuse it. The client already supports batching; a singleton
+      is the correct model.
 
 ### 4b. Duplicated endpoint boilerplate
 
@@ -114,7 +114,7 @@ OpenWeather → capture event → return response. The `dev-server.js` duplicate
 time.
 
 - [ ] Extract a `withPostHog(handler)` wrapper or shared request-handling utility so the
-  method guard and analytics plumbing live in one place.
+      method guard and analytics plumbing live in one place.
 
 ---
 
@@ -126,7 +126,7 @@ under `src/` implies it is client-safe, and any future bundler/lint misconfigura
 accidentally include it in the client bundle.
 
 - [ ] Move to `server/openWeather.ts` (or `netlify/lib/openWeather.ts`) and update imports in
-  both Netlify functions and `dev-server.ts`.
+      both Netlify functions and `dev-server.ts`.
 
 ---
 
@@ -136,21 +136,21 @@ Neither `useLocationQuery` nor `useForecastQuery` sets `staleTime`, so React Que
 both on every window focus and every component mount. Weather data is stable for at least 10
 minutes.
 
-- [ ] Add `staleTime: 10 * 60 * 1000` (10 min) to both queries.
-- [ ] Consider `gcTime: 30 * 60 * 1000` (30 min) so background tabs don't evict cached
-  forecasts immediately.
+- [x] Add `staleTime: 10 * 60 * 1000` (10 min) to both queries.
+- [x] Consider `gcTime: 30 * 60 * 1000` (30 min) so background tabs don't evict cached
+      forecasts immediately.
 
 ---
 
 ## 7. Minor / Low-effort Improvements
 
-| # | Issue | Fix |
-|---|-------|-----|
-| 7a | `useEffect` to sync React Query state to parent is an anti-pattern | Lift error/loading state out of `WeatherResult` or use React Query's `isError`/`error` fields directly |
-| 7b | `getBestHourlyRunTimes` sorts by `temp` descending (hottest hours) | Sort by closeness to midpoint of `[minTemp, maxTemp]` to surface _most comfortable_ hours |
-| 7c | No `aria-label` on icon-only weather icons | Add accessible labels for screen readers |
-| 7d | `console.log` debug lines left in Netlify function handlers | Remove or gate behind `process.env.NODE_ENV === 'development'` |
-| 7e | Hard-coded port `3001` in `dev-server` | Read from `process.env.PORT` with fallback |
+| #   | Issue                                                              | Fix                                                                                                    |
+| --- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| 7a  | `useEffect` to sync React Query state to parent is an anti-pattern | Lift error/loading state out of `WeatherResult` or use React Query's `isError`/`error` fields directly |
+| 7b  | `getBestHourlyRunTimes` sorts by `temp` descending (hottest hours) | Sort by closeness to midpoint of `[minTemp, maxTemp]` to surface _most comfortable_ hours              |
+| 7c  | No `aria-label` on icon-only weather icons                         | Add accessible labels for screen readers                                                               |
+| 7d  | `console.log` debug lines left in Netlify function handlers        | Remove or gate behind `process.env.NODE_ENV === 'development'`                                         |
+| 7e  | Hard-coded port `3001` in `dev-server`                             | Read from `process.env.PORT` with fallback                                                             |
 
 ---
 

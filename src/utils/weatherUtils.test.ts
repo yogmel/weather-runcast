@@ -41,14 +41,65 @@ const mockDailyWeather: DailyWeather = {
   clouds: 58,
   pop: 0.35,
   uvi: 4.7,
-  rain: 5,
+  rain: 0,
 };
 
 describe("getRunRecommendation", () => {
-  it("returns Indoor run when rain exceeds threshold", () => {
+  it("returns Outdoor run when ideal temperature and no rain", () => {
     expect(getRunRecommendation(mockDailyWeather, 10, 25)).toEqual({
+      type: "Outdoor run",
+    });
+  });
+
+  it("returns Indoor run when rain exceeds threshold", () => {
+    expect(
+      getRunRecommendation({ ...mockDailyWeather, rain: 3 }, 10, 25),
+    ).toEqual({
       type: "Indoor run",
       reason: "It's raining",
+    });
+  });
+
+  it("returns Indoor run when outside of temperature range", () => {
+    expect(getRunRecommendation(mockDailyWeather, 21, 25)).toEqual({
+      type: "Indoor run",
+      reason: "Temperature is not ideal.",
+    });
+  });
+
+  it("returns Indoor run when alerts active", () => {
+    const alertsMock = [
+      {
+        sender_name: "JMA",
+        event: "Wind",
+        start: 1779159601,
+        end: 1779202800,
+        description: "",
+        tags: ["Wind"],
+      },
+    ];
+
+    expect(getRunRecommendation(mockDailyWeather, 10, 25, alertsMock)).toEqual({
+      type: "Indoor run",
+      reason: "Weather alerts are active.",
+    });
+  });
+
+  it("returns Indoor run when outside of temperature range and alerts active", () => {
+    const alertsMock = [
+      {
+        sender_name: "JMA",
+        event: "Wind",
+        start: 1779159601,
+        end: 1779202800,
+        description: "",
+        tags: ["Wind"],
+      },
+    ];
+
+    expect(getRunRecommendation(mockDailyWeather, 21, 25, alertsMock)).toEqual({
+      type: "Indoor run",
+      reason: "Temperature is not ideal. Weather alerts are active.",
     });
   });
 });

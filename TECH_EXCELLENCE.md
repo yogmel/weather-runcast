@@ -14,7 +14,7 @@ all component/hook logic are untested.
 
 **Improvements:**
 
-- [ ] Add unit tests for `getRunRecommendation`: happy path (outdoor), temperature out of
+- [x] Add unit tests for `getRunRecommendation`: happy path (outdoor), temperature out of
       range, active weather alerts, combined conditions.
 - [ ] Add unit tests for `getBestHourlyRunTimes`: suitable hours found, fewer than 3 suitable
       hours, no suitable hours, edge cases at 8am/8pm boundary.

@@ -55,13 +55,20 @@ export const getBestHourlyRunTimes = (
   hourlyForecast: HourlyWeather[],
   minTemp: number,
   maxTemp: number,
+  timeZone: string = Intl.DateTimeFormat().resolvedOptions().timeZone,
 ): { suitable: boolean; bestHours: string[] } => {
+  const hourFormatter = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    hour12: false,
+    timeZone,
+  });
+
   const suitableHours: HourlyWeather[] = [];
   const startHour = 8;
   const endHour = 20;
 
   hourlyForecast.forEach((hour) => {
-    const hourOfDay = new Date(hour.dt * 1000).getHours();
+    const hourOfDay = parseInt(hourFormatter.format(new Date(hour.dt * 1000)), 10);
     if (hourOfDay >= startHour && hourOfDay <= endHour) {
       const recommendation = getHourlyRunRecommendation(hour, minTemp, maxTemp);
       if (recommendation.type === "Outdoor run") {
@@ -70,18 +77,18 @@ export const getBestHourlyRunTimes = (
     }
   });
 
-  if (suitableHours.length >= 3) {
-    // Sort by temperature in descending order to find the best hours
+  if (suitableHours.length >= 1) {
     suitableHours.sort((a, b) => b.temp - a.temp);
 
     const bestHours = suitableHours
-      .slice(0, Math.min(suitableHours.length, 3)) // Take up to 3 warmest hours
+      .slice(0, Math.min(suitableHours.length, 3))
       .map((hour) => {
-        const time = new Date(hour.dt * 1000).toLocaleTimeString([], {
+        const timeStr = new Date(hour.dt * 1000).toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
+          timeZone,
         });
-        return `${time} (${hour.temp}°C)`;
+        return `${timeStr} (${hour.temp}°C)`;
       });
 
     return { suitable: true, bestHours };

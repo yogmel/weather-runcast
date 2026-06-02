@@ -1,11 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import WeatherCard from "./WeatherCard";
 import type { DailyWeather } from "../types";
 import * as weatherUtils from "../utils/weatherUtils";
 
-vi.mock("../utils/weatherUtils");
+vi.mock("../utils/weatherUtils", () => ({
+  getRunRecommendation: vi.fn(),
+  getBestHourlyRunTimes: vi.fn(),
+}));
+
+const mockRecommendation = weatherUtils.getRunRecommendation as Mock;
+const mockBestHours = weatherUtils.getBestHourlyRunTimes as Mock;
 
 const mockDay: DailyWeather = {
   dt: 1711065600,
@@ -38,8 +45,8 @@ const renderCard = () =>
 
 describe("WeatherCard", () => {
   beforeEach(() => {
-    vi.mocked(weatherUtils.getRunRecommendation).mockReturnValue({ type: "Outdoor run" });
-    vi.mocked(weatherUtils.getBestHourlyRunTimes).mockReturnValue({ suitable: false, bestHours: [] });
+    mockRecommendation.mockReturnValue({ type: "Outdoor run" });
+    mockBestHours.mockReturnValue({ suitable: false, bestHours: [] });
   });
 
   it("renders the Outdoor run badge", () => {
@@ -48,17 +55,14 @@ describe("WeatherCard", () => {
   });
 
   it("renders the Indoor run badge with reason", () => {
-    vi.mocked(weatherUtils.getRunRecommendation).mockReturnValue({
-      type: "Indoor run",
-      reason: "It's raining",
-    });
+    mockRecommendation.mockReturnValue({ type: "Indoor run", reason: "It's raining" });
     renderCard();
     expect(screen.getByText("Indoor run")).toBeInTheDocument();
     expect(screen.getByText("It's raining")).toBeInTheDocument();
   });
 
   it("renders best hours when suitable hours exist", () => {
-    vi.mocked(weatherUtils.getBestHourlyRunTimes).mockReturnValue({
+    mockBestHours.mockReturnValue({
       suitable: true,
       bestHours: ["10:00 AM (20°C)", "09:00 AM (18°C)"],
     });

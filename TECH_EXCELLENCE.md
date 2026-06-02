@@ -16,9 +16,9 @@ all component/hook logic are untested.
 
 - [x] Add unit tests for `getRunRecommendation`: happy path (outdoor), temperature out of
       range, active weather alerts, combined conditions.
-- [ ] Add unit tests for `getBestHourlyRunTimes`: suitable hours found, fewer than 3 suitable
+- [x] Add unit tests for `getBestHourlyRunTimes`: suitable hours found, fewer than 3 suitable
       hours, no suitable hours, edge cases at 8am/8pm boundary.
-- [ ] Add component tests (Vitest + React Testing Library) for `WeatherCard`: renders correct
+- [x] Add component tests (Vitest + React Testing Library) for `WeatherCard`: renders correct
       recommendation badge, renders best hours when suitable, hides best hours when not suitable.
 - [ ] Add component test for `App`: location persists to `localStorage` on search.
 - [ ] Enforce a coverage threshold in `vite.config.ts` (e.g. 80 % lines/branches) so CI fails

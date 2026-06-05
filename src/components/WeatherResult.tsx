@@ -38,7 +38,7 @@ export const WeatherResult = ({
 
     if (coordinates !== undefined) {
       setLatLng(coordinates);
-    } else {
+    } else if (!isLoading && coordinates === undefined) {
       setError("Location not found. Please try again.");
     }
   }, [coordinates, isLoading]);

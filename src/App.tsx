@@ -59,6 +59,7 @@ function App() {
             colorScheme="blue"
             loading={loading}
             loadingText="Searching..."
+            disabled={editingLocation === ""}
           >
             Search
           </Button>

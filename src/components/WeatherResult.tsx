@@ -7,8 +7,8 @@ import WeatherCard from "./WeatherCard";
 
 interface WeatherResultProps {
   location: string;
-  minTemp: string;
-  maxTemp: string;
+  minTemp: number;
+  maxTemp: number;
   setError: (error: string | null) => void;
   setLoading: (isLoading: boolean) => void;
 }
@@ -60,8 +60,8 @@ export const WeatherResult = ({
                         key={day.dt}
                         day={day}
                         alerts={forecast.alerts}
-                        minTemp={parseInt(minTemp)}
-                        maxTemp={parseInt(maxTemp)}
+                        minTemp={minTemp}
+                        maxTemp={maxTemp}
                         hourlyForecast={forecast.hourly.filter((hour) => {
                           const dayStart = day.dt;
                           const dayEnd = day.dt + 24 * 60 * 60; // 24 hours in seconds

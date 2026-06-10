@@ -63,7 +63,7 @@ In `WeatherResult.tsx`, the `useEffect` calls `setError("Location not found.")` 
 branch whenever `coordinates === undefined`. This fires on initial render (before the query
 runs), briefly flashing an error.
 
-- [ ] Guard the else branch: only call `setError` when `!isLoading && coordinates === undefined`.
+- [x] Guard the else branch: only call `setError` when `!isLoading && coordinates === undefined`.
 
 ### 2d. Temperature state stored as strings
 
@@ -71,7 +71,7 @@ runs), briefly flashing an error.
 render in `WeatherResult`. Keeping them as strings increases chance of `NaN` bugs and
 clutters parsing logic.
 
-- [ ] Change state to `useState<number>` and parse once in the `onChange` handler (or use a
+- [x] Change state to `useState<number>` and parse once in the `onChange` handler (or use a
       controlled numeric input).
 
 ---

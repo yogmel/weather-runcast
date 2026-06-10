@@ -17,8 +17,8 @@ function App() {
     localStorage.getItem("lastLocation") || null,
   );
   const [loading, setLoading] = useState<boolean>(false);
-  const [minTemp, setMinTemp] = useState<string>("10"); // Default min temperature
-  const [maxTemp, setMaxTemp] = useState<string>("25"); // Default max temperature
+  const [minTemp, setMinTemp] = useState<number>(10); // Default min temperature
+  const [maxTemp, setMaxTemp] = useState<number>(25); // Default max temperature
 
   const [error, setError] = useState<string | null>(null);
 
@@ -71,7 +71,7 @@ function App() {
             <Input
               type="number"
               value={minTemp}
-              onChange={(e) => setMinTemp(e.target.value)}
+              onChange={(e) => setMinTemp(Number(e.target.value))}
               placeholder="Min Temp (°C)"
               bg="white"
               _placeholder={{ color: "gray.400" }}
@@ -84,7 +84,7 @@ function App() {
             <Input
               type="number"
               value={maxTemp}
-              onChange={(e) => setMaxTemp(e.target.value)}
+              onChange={(e) => setMaxTemp(Number(e.target.value))}
               placeholder="Max Temp (°C)"
               bg="white"
               _placeholder={{ color: "gray.400" }}

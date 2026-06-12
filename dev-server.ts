@@ -35,21 +35,27 @@ app.get("/api/location", async (req, res) => {
   console.log("Function called with method:", req.method);
   console.log("Query params: DEV-SERVER", req.query);
 
+  const distinctIdHeader = req.headers["x-posthog-distinct-id"];
   const distinctId =
-    req.headers["x-posthog-distinct-id"] || req.ip || "anonymous";
+    (Array.isArray(distinctIdHeader) ? distinctIdHeader[0] : distinctIdHeader) ||
+    req.ip ||
+    "anonymous";
+
+  const location = req.query.location as string;
 
   try {
-    const result = await getLatLngFromLocation(
-      API_KEY ?? "",
-      req.query.location,
-    );
+    const result = await getLatLngFromLocation(API_KEY ?? "", location);
+
+    if (!result) {
+      return res.status(500).json({ error: "Failed to fetch location data" });
+    }
 
     if (result.success) {
       posthog?.capture({
         distinctId,
         event: "location_searched",
         properties: {
-          location: req.query.location,
+          location,
           resolved_name: result.data?.name,
         },
       });
@@ -60,7 +66,7 @@ app.get("/api/location", async (req, res) => {
       distinctId,
       event: "location_not_found",
       properties: {
-        location: req.query.location,
+        location,
         error_status: result.error?.status,
       },
     });
@@ -76,23 +82,29 @@ app.get("/api/weather", async (req, res) => {
   console.log("Function called with method:", req.method);
   console.log("Query params: DEV-SERVER", req.query);
 
+  const distinctIdHeader = req.headers["x-posthog-distinct-id"];
   const distinctId =
-    req.headers["x-posthog-distinct-id"] || req.ip || "anonymous";
+    (Array.isArray(distinctIdHeader) ? distinctIdHeader[0] : distinctIdHeader) ||
+    req.ip ||
+    "anonymous";
+
+  const lat = req.query.lat as string;
+  const lng = req.query.lng as string;
 
   try {
-    const result = await getWeatherForecast(
-      API_KEY ?? "",
-      req.query.lat,
-      req.query.lng,
-    );
+    const result = await getWeatherForecast(API_KEY ?? "", lat, lng);
+
+    if (!result) {
+      return res.status(500).json({ error: "Failed to fetch weather data" });
+    }
 
     if (result.success) {
       posthog?.capture({
         distinctId,
         event: "weather_forecast_retrieved",
         properties: {
-          lat: req.query.lat,
-          lng: req.query.lng,
+          lat,
+          lng,
         },
       });
       return res.status(200).json(result.data);

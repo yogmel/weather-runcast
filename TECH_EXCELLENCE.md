@@ -20,8 +20,8 @@ all component/hook logic are untested.
       hours, no suitable hours, edge cases at 8am/8pm boundary.
 - [x] Add component tests (Vitest + React Testing Library) for `WeatherCard`: renders correct
       recommendation badge, renders best hours when suitable, hides best hours when not suitable.
-- [ ] Add component test for `App`: location persists to `localStorage` on search.
-- [ ] Enforce a coverage threshold in `vite.config.ts` (e.g. 80 % lines/branches) so CI fails
+- [x] Add component test for `App`: location persists to `localStorage` on search.
+- [x] Enforce a coverage threshold in `vite.config.ts` (e.g. 80 % lines/branches) so CI fails
       if coverage regresses.
 
 ---
